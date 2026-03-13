@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SciSlice</title>
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/css/styles.css">
@@ -15,11 +16,11 @@
    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 sm:w-6 sm:h-6 transform -rotate-45 hidden sm:block"><circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><line x1="20" y1="4" x2="8.12" y2="15.88" /><line x1="14.47" y1="14.48" x2="20" y2="20" /><line x1="8.12" y1="8.12" x2="12" y2="12" /></svg>
    <h1 class="text-lg sm:text-xl font-black tracking-tight">SciSlice</h1>
   </div>
-  <div class="flex bg-slate-100 p-1 rounded-lg gap-1">
+  <div class="flex items-center gap-2"><button id="themeToggle" onclick="toggleDarkMode()" class="px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium bg-slate-200 text-slate-700">🌙 Dark</button><div class="flex items-center gap-2"><button id="themeToggle" onclick="toggleDarkMode()" class="px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium bg-slate-200 text-slate-700">🌙 Dark</button><div class="flex bg-slate-100 p-1 rounded-lg gap-1">
    <button onclick="setTab('slice')" id="tab-btn-slice" class="px-2 sm:px-4 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-2">Slice</button>
    <button onclick="setTab('compare')" id="tab-btn-compare" class="px-2 sm:px-4 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-2">Compare</button>
    <button onclick="setTab('settings')" id="tab-btn-settings" class="px-2 sm:px-4 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-2">Settings</button>
-  </div>
+  </div></div>
  </div>
 </header>
 <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -62,6 +63,6 @@
   </div>
  </div>
 </main>
-<script src="/assets/js/app.js"></script>
+<script type="module" src="/assets/js/app.js"></script>
 </body>
 </html>
