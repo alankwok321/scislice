@@ -53,8 +53,8 @@ function updateSaveIcon(){
 window.SciSlice={setTab,setCurrentWord,handleSlice,resetSlice,selectPart,toggleSave,setComparePair,playAudio,updateSource:ui.updateSource,saveApiKey:ui.saveApiKey,toggleDarkMode:ui.toggleDarkMode,analyzeWord,clearCustomWords,clearSavedWords,updateSaveIcon};
 document.getElementById('customInput').addEventListener('input',(e)=>{document.getElementById('analyzeBtn').disabled=e.target.value.trim().length===0||document.getElementById('analyzeText').innerText==='Analyzing...';});
 ui.applyTheme();
-// Default to Compare tab (requested)
-setTab('compare');
+// Default to Slice tab
+setTab('slice');
 window.analyzeWord=analyzeWord;
 window.setTab=setTab;
 window.setCurrentWord=setCurrentWord;
