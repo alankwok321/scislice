@@ -13,8 +13,7 @@ export default async function handler(req, res) {
   try {
     const { path, key, payload } = (req.body || {});
 
-    // If user provided an API key (from browser settings), use it; else fallback to server key.
-    const apiKey = (typeof key === 'string' && key.trim()) ? key.trim() : serverKey;
+    const userKey = (typeof key === 'string' && key.trim()) ? key.trim() : '';
 
     if (typeof path !== 'string' || !path.startsWith('/v1beta/models/')) {
       res.status(400).json({ error: 'Invalid path' });
@@ -25,23 +24,41 @@ export default async function handler(req, res) {
       return;
     }
 
-    const url = `https://generativelanguage.googleapis.com${path}?key=${encodeURIComponent(apiKey)}`;
-
-    const upstream = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    const text = await upstream.text();
-    res.status(upstream.status);
-
-    // Try to return JSON, else raw text.
-    try {
-      res.json(JSON.parse(text));
-    } catch {
-      res.send(text);
+    async function callGemini(apiKey) {
+      const url = `https://generativelanguage.googleapis.com${path}?key=${encodeURIComponent(apiKey)}`;
+      const upstream = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const text = await upstream.text();
+      let json = null;
+      try { json = JSON.parse(text); } catch {}
+      return { upstream, text, json };
     }
+
+    // 1) Try user key if provided; else server key.
+    const firstKey = userKey || serverKey;
+    let result = await callGemini(firstKey);
+
+    // 2) If user key fails with auth/key-style errors, fallback to server key automatically.
+    const shouldFallback = userKey && firstKey !== serverKey && !result.upstream.ok && (
+      result.upstream.status === 400 ||
+      result.upstream.status === 401 ||
+      result.upstream.status === 403
+    );
+
+    if (shouldFallback) {
+      const msg = String(result.json?.error?.message || result.text || '').toLowerCase();
+      const keyError = msg.includes('api key') || msg.includes('invalid') || msg.includes('expired') || msg.includes('permission');
+      if (keyError) {
+        result = await callGemini(serverKey);
+      }
+    }
+
+    res.status(result.upstream.status);
+    if (result.json) res.json(result.json);
+    else res.send(result.text);
   } catch (err) {
     res.status(500).json({ error: err?.message || 'Server error' });
   }
