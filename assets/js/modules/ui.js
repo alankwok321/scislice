@@ -3,7 +3,19 @@ export function createUI({state,getAllWords,playAudio}){
   function updateSource(val){state.selectedSource=val;localStorage.setItem('sciSlice_selectedSource',val);}
   function saveApiKey(){const input=document.getElementById('apiKeyInput');if(input.value.trim()){state.apiKey=input.value.trim();localStorage.setItem('sciSlice_apiKey',state.apiKey);alert('API Key saved successfully!');}}
   function toggleDarkMode(){state.darkMode=!state.darkMode;localStorage.setItem('sciSlice_darkMode',JSON.stringify(state.darkMode));applyTheme();}
-  function applyTheme(){document.documentElement.classList.toggle('dark', !!state.darkMode);document.body.classList.toggle('bg-slate-950', !!state.darkMode);document.body.classList.toggle('text-slate-100', !!state.darkMode);document.body.classList.toggle('bg-slate-50', !state.darkMode);document.body.classList.toggle('text-slate-900', !state.darkMode);const btn=document.getElementById('themeToggle');if(btn) btn.textContent=state.darkMode?'☀️ Light':'🌙 Dark';}
+  function applyTheme(){
+    document.documentElement.classList.toggle('dark', !!state.darkMode);
+    document.body.classList.toggle('bg-slate-950', !!state.darkMode);
+    document.body.classList.toggle('text-slate-100', !!state.darkMode);
+    document.body.classList.toggle('bg-slate-50', !state.darkMode);
+    document.body.classList.toggle('text-slate-900', !state.darkMode);
+    document.querySelectorAll('.bg-white').forEach(el=>el.classList.toggle('bg-slate-900', !!state.darkMode));
+    document.querySelectorAll('.bg-slate-50').forEach(el=>el.classList.toggle('bg-slate-800', !!state.darkMode));
+    document.querySelectorAll('.text-slate-800').forEach(el=>el.classList.toggle('text-slate-100', !!state.darkMode));
+    document.querySelectorAll('.text-slate-700,.text-slate-600,.text-slate-500').forEach(el=>el.classList.toggle('text-slate-300', !!state.darkMode));
+    const btn=document.getElementById('themeToggle');
+    if(btn) btn.textContent=state.darkMode?'☀️ Light':'🌙 Dark';
+  }
   function getPartStyles(type,isSliced){if(!isSliced)return 'text-slate-800 bg-transparent border-transparent';switch(type){case 'prefix':return 'bg-blue-100 text-blue-800 border-blue-300 shadow-sm';case 'root':return 'bg-green-100 text-green-800 border-green-300 shadow-sm';case 'suffix':return 'bg-orange-100 text-orange-800 border-orange-300 shadow-sm';default:return 'bg-gray-100 text-gray-800 border-gray-300 shadow-sm';}}
   function getPartLabel(type){switch(type){case 'prefix':return 'Prefix';case 'root':return 'Root';case 'suffix':return 'Suffix';default:return 'Part';}}
   function generateWordBuilderHTML(wordData,interactive=true){const gapClass=(state.isSliced||!interactive)?'gap-1 sm:gap-2 md:gap-4':'gap-0';let partsHTML=wordData.parts.map((part,index)=>{const styles=getPartStyles(part.type,state.isSliced||!interactive);let borderRadius='16px';if(!state.isSliced&&interactive){if(wordData.parts.length===1)borderRadius='16px';else if(index===0)borderRadius='16px 0 0 16px';else if(index===wordData.parts.length-1)borderRadius='0 16px 16px 0';else borderRadius='0';}const labelOpacity=(state.isSliced||!interactive)?'opacity-100':'opacity-0';const labelColor=part.type==='prefix'?'text-blue-500':part.type==='root'?'text-green-500':'text-orange-500';const onClickEvent=interactive?`onclick="window.SciSlice.selectPart(${index})"`:'';return `<div ${onClickEvent} class="word-slice-part relative flex flex-col items-center justify-center px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-6 rounded-xl border-2 text-2xl sm:text-4xl md:text-6xl font-black tracking-wide lowercase transition-all duration-500 ease-in-out ${interactive?'cursor-pointer hover:scale-105':''} ${styles}" style="border-radius:${borderRadius}">${part.text}<div class="part-label absolute -bottom-5 md:-bottom-6 text-[10px] sm:text-xs md:text-sm font-bold tracking-wider uppercase transition-opacity duration-300 delay-300 ${labelOpacity} ${labelColor}">${getPartLabel(part.type)}</div></div>`;}).join('');return `<div class="word-builder-wrapper flex justify-center items-center transition-all duration-500 ease-in-out w-max mx-auto ${gapClass}">${partsHTML}</div>`;}
